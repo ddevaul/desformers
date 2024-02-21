@@ -1,6 +1,6 @@
 import sys
 import torch
-sys.path.append('./transformers_outer/src')
+sys.path.append('./desformers/src')
 from transformers2 import BertTokenizer
 
 class SecondaryTokenizer:
