@@ -201,7 +201,7 @@ class CombinedEmbeddings(nn.Module):
             combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1)
         # word_embeds =  self.secondary_embeddings(secondary_ids) 
         # combined_embeds = torch.cat([char_embeds, word_embeds], dim=-1)
-        print(combined_embeds.shape)
+        # print(combined_embeds.shape)
         embeddings = self.combination_layer(combined_embeds)
         return embeddings
 
