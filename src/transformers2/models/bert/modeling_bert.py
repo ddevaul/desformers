@@ -186,35 +186,16 @@ class CombinedEmbeddings(nn.Module):
             for stok in config.secondary_tokenizers
         ])
         bigger_dim = config.hidden_size + sum(stok.hidden_size for stok in config.secondary_tokenizers)
-        # bigger_dim = config.hidden_size
-        # for stok in config.secondary_tokenizers:
-        #     self.secondary_embeddings.append(nn.Embedding(stok.vocab_size, stok.hidden_size))
-        #     bigger_dim += stok.hidden_size
         self.combination_layer = nn.Linear(bigger_dim, config.hidden_size)
-        # self.combination_layer = nn.Linear(config.hidden_size * 2, config.hidden_size)
 
     def forward(self, input_ids, secondary_ids):
-        print("forward, embeddings", input_ids.shape)
         char_embeds = self.char_embeddings(input_ids)
-        print("cew", self.char_embeddings.weight)
-
-        # print(input_ids.shape)
         combined_embeds = char_embeds
-        # print(secondary_ids[:, 0, :].shape)
-
-        # go through all the different tokenizers
-        # [texts, tokenizers, tokens]
-        print("input_ids device", input_ids.device)
         for i in range(secondary_ids.shape[1]):
             slice = secondary_ids[:, i, :]
             secondary_embeds = self.secondary_embeddings[i]
             secondary_embeds = secondary_embeds(slice)
-            # print(secondary_embeds)
-            #  secondary_embeds = self.secondary_embeddings(secondary_ids)
             combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1)
-        # word_embeds =  self.secondary_embeddings(secondary_ids) 
-        # combined_embeds = torch.cat([char_embeds, word_embeds], dim=-1)
-        # print(combined_embeds.shape)
         combined_embeds = combined_embeds
         embeddings = self.combination_layer(combined_embeds)
         return embeddings
