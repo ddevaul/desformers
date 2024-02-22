@@ -189,20 +189,24 @@ class CombinedEmbeddings(nn.Module):
         # self.combination_layer = nn.Linear(config.hidden_size * 2, config.hidden_size)
 
     def forward(self, input_ids, secondary_ids):
-        # print("forward, embeddings", input_ids.shape)
+        print("forward, embeddings", input_ids.shape)
         char_embeds = self.char_embeddings(input_ids)
         # print(input_ids.shape)
         combined_embeds = char_embeds
         # print(secondary_ids[:, 0, :].shape)
 
         # go through all the different tokenizers
+        # [texts, tokenizers, tokens]
         for i in range(secondary_ids.shape[1]):
             secondary_embeds = self.secondary_embeddings[i](secondary_ids[:, i, :])
+            #  secondary_embeds = self.secondary_embeddings(secondary_ids)
             combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1)
         # word_embeds =  self.secondary_embeddings(secondary_ids) 
         # combined_embeds = torch.cat([char_embeds, word_embeds], dim=-1)
         # print(combined_embeds.shape)
         embeddings = self.combination_layer(combined_embeds)
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        embeddings = embeddings.to(input_ids.device)
         return embeddings
 
 class BertEmbeddings(nn.Module):
@@ -242,7 +246,6 @@ class BertEmbeddings(nn.Module):
         inputs_embeds: Optional[torch.FloatTensor] = None,
         past_key_values_length: int = 0,
     ) -> torch.Tensor:
-        print(secondary_ids.shape)
         if secondary_ids is not None:
             input_shape = [secondary_ids.shape[0], secondary_ids.shape[2]]
         else:
