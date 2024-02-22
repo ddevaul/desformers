@@ -201,9 +201,9 @@ class CombinedEmbeddings(nn.Module):
         for i in range(secondary_ids.shape[1]):
             slice = secondary_ids[:, i, :].to(input_ids.device)
             print("slice", slice)
+            print("secondary", secondary_embeds)
 
             secondary_embeds = self.secondary_embeddings[i](slice)
-            print("secondary", secondary_embeds)
             secondary_embeds = secondary_embeds.to(input_ids.device)
             print(secondary_embeds)
             #  secondary_embeds = self.secondary_embeddings(secondary_ids)
