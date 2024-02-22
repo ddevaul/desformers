@@ -205,8 +205,9 @@ class CombinedEmbeddings(nn.Module):
             print("slice", slice)
             print("secondary", self.secondary_embeddings)
             print("secondary slice", self.secondary_embeddings[i].weight)
-
-            secondary_embeds = self.secondary_embeddings[i](slice)
+            secondary_embeds = self.secondary_embeddings[i]
+            secondary_embeds.weight.to(input_ids.device)
+            secondary_embeds = secondary_embeds(slice)
             secondary_embeds = secondary_embeds.to(input_ids.device)
             print(secondary_embeds)
             #  secondary_embeds = self.secondary_embeddings(secondary_ids)
