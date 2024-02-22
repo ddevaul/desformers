@@ -201,7 +201,7 @@ class CombinedEmbeddings(nn.Module):
         # [texts, tokenizers, tokens]
         print("input_ids device", input_ids.device)
         for i in range(secondary_ids.shape[1]):
-            slice = secondary_ids[:, i, :]
+            slice = secondary_ids[:, i, :].to('cpu')
             secondary_embeds = self.secondary_embeddings[i]
             secondary_embeds = secondary_embeds(slice)
             print(secondary_embeds)
