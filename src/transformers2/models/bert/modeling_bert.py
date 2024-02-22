@@ -198,7 +198,8 @@ class CombinedEmbeddings(nn.Module):
         # go through all the different tokenizers
         # [texts, tokenizers, tokens]
         for i in range(secondary_ids.shape[1]):
-            secondary_embeds = self.secondary_embeddings[i](secondary_ids[:, i, :]).to(input_ids.device)
+            slice = secondary_ids[:, i, :].to(input_ids.device)
+            secondary_embeds = self.secondary_embeddings[i](slice)
             #  secondary_embeds = self.secondary_embeddings(secondary_ids)
             combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1).to(input_ids.device)
         # word_embeds =  self.secondary_embeddings(secondary_ids) 
@@ -268,7 +269,7 @@ class BertEmbeddings(nn.Module):
 
         # if inputs_embeds is None:
         #     inputs_embeds = self.word_embeddings(input_ids)
-        secondary_ids = secondary_ids.to(input_ids.device)
+        # secondary_ids = secondary_ids.to(input_ids.device)
         inputs_embeds = self.combined_embeddings(input_ids, secondary_ids)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
         print("tte", token_type_embeddings.shape)
