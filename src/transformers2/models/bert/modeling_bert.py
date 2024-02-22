@@ -194,27 +194,23 @@ class CombinedEmbeddings(nn.Module):
         print("cew", self.char_embeddings.weight)
 
         # print(input_ids.shape)
-        combined_embeds = char_embeds
+        combined_embeds = char_embeds.to('cpu')
         # print(secondary_ids[:, 0, :].shape)
 
         # go through all the different tokenizers
         # [texts, tokenizers, tokens]
         print("input_ids device", input_ids.device)
         for i in range(secondary_ids.shape[1]):
-            slice = secondary_ids[:, i, :].to(input_ids.device)
-            print("slice", slice)
-            print("secondary", self.secondary_embeddings)
-            print("secondary slice", self.secondary_embeddings[i].weight)
+            slice = secondary_ids[:, i, :]
             secondary_embeds = self.secondary_embeddings[i]
-            secondary_embeds.weight = secondary_embeds.weight.to(input_ids.device)
             secondary_embeds = secondary_embeds(slice)
-            secondary_embeds = secondary_embeds.to(input_ids.device)
             print(secondary_embeds)
             #  secondary_embeds = self.secondary_embeddings(secondary_ids)
-            combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1).to(input_ids.device)
+            combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1)
         # word_embeds =  self.secondary_embeddings(secondary_ids) 
         # combined_embeds = torch.cat([char_embeds, word_embeds], dim=-1)
         # print(combined_embeds.shape)
+        combined_embeds = combined_embeds.to(input_ids.device)
         embeddings = self.combination_layer(combined_embeds).to(input_ids.device)
         embeddings = embeddings.to(input_ids.device)
         return embeddings
