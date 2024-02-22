@@ -180,6 +180,7 @@ class CombinedEmbeddings(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.char_embeddings = nn.Embedding(config.vocab_size, config.hidden_size)
+        print("cew", self.char_embeddings.weight)
         self.secondary_embeddings = []
         bigger_dim = config.hidden_size
         for stok in config.secondary_tokenizers:
