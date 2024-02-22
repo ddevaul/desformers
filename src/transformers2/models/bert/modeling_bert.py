@@ -268,6 +268,7 @@ class BertEmbeddings(nn.Module):
 
         # if inputs_embeds is None:
         #     inputs_embeds = self.word_embeddings(input_ids)
+        secondary_ids = secondary_ids.to(input_ids.device)
         inputs_embeds = self.combined_embeddings(input_ids, secondary_ids)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
         print("tte", token_type_embeddings.shape)
