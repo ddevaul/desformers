@@ -197,6 +197,8 @@ class CombinedEmbeddings(nn.Module):
 
         # go through all the different tokenizers
         # [texts, tokenizers, tokens]
+        print("input_ids device", input_ids.device)
+
         for i in range(secondary_ids.shape[1]):
             slice = secondary_ids[:, i, :].to(input_ids.device)
             secondary_embeds = self.secondary_embeddings[i](slice).to(input_ids.device)
