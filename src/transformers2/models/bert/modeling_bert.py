@@ -182,7 +182,7 @@ class CombinedEmbeddings(nn.Module):
         self.char_embeddings = nn.Embedding(config.vocab_size, config.hidden_size)
         self.secondary_embeddings = []
         self.secondary_embeddings = nn.ModuleList([
-            nn.Embedding(stok.vocab_size, stok.hidden_size).to(config.device)  # Move each secondary embedding to the GPU
+            nn.Embedding(stok.vocab_size, stok.hidden_size)  # Move each secondary embedding to the GPU
             for stok in config.secondary_tokenizers
         ])
         bigger_dim = config.hidden_size + sum(stok.hidden_size for stok in config.secondary_tokenizers)
