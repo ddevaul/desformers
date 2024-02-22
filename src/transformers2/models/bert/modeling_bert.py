@@ -198,13 +198,13 @@ class CombinedEmbeddings(nn.Module):
         # go through all the different tokenizers
         # [texts, tokenizers, tokens]
         for i in range(secondary_ids.shape[1]):
-            secondary_embeds = self.secondary_embeddings[i](secondary_ids[:, i, :])
+            secondary_embeds = self.secondary_embeddings[i](secondary_ids[:, i, :]).to(input_ids.device)
             #  secondary_embeds = self.secondary_embeddings(secondary_ids)
             combined_embeds = torch.cat([combined_embeds, secondary_embeds], dim=-1).to(input_ids.device)
         # word_embeds =  self.secondary_embeddings(secondary_ids) 
         # combined_embeds = torch.cat([char_embeds, word_embeds], dim=-1)
         # print(combined_embeds.shape)
-        embeddings = self.combination_layer(combined_embeds)
+        embeddings = self.combination_layer(combined_embeds).to(input_ids.device)
         embeddings = embeddings.to(input_ids.device)
         return embeddings
 
