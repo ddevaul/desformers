@@ -179,13 +179,13 @@ def load_tf_weights_in_bert(model, config, tf_checkpoint_path):
 class CombinedEmbeddings(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.char_embeddings = nn.Embedding(config.vocab_size, config.hidden_size)
+        self.char_embeddings = nn.Embedding(config.vocab_size, config.char_hidden_size)
         self.secondary_embeddings = []
         self.secondary_embeddings = nn.ModuleList([
             nn.Embedding(stok.vocab_size, stok.hidden_size)  # Move each secondary embedding to the GPU
             for stok in config.secondary_tokenizers
         ])
-        bigger_dim = config.hidden_size + sum(stok.hidden_size for stok in config.secondary_tokenizers)
+        bigger_dim = config.char_hidden_size + sum(stok.hidden_size for stok in config.secondary_tokenizers)
         self.combination_layer = nn.Linear(bigger_dim, config.hidden_size)
 
     def forward(self, input_ids, secondary_ids):
