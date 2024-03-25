@@ -18,7 +18,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from random import randint
 from typing import Any, Callable, Dict, List, NewType, Optional, Tuple, Union
-
+import math
 import numpy as np
 
 from ..models.bert import BertTokenizer, BertTokenizerFast
@@ -953,16 +953,16 @@ class DataCollatorForSequenceMask(DataCollatorForLanguageModeling):
             )
 
         cand_indexes = [[]]
+        max_count = math.floor(random.normalvariate(mu=7.0, sigma=2.0))
+
         for i, token in enumerate(input_tokens):
             if token == "[CLS]" or token == "[SEP]":
                 continue
 
-            r = random.random()
-            if len(cand_indexes[-1]) == 0:
-                cand_indexes[-1].append(i)
-            elif r <= 0.875:
+            if len(cand_indexes[-1]) <= max_count:
                 cand_indexes[-1].append(i)
             else:
+                max_count = random.normalvariate(mu=7.0, sigma=2.0)
                 cand_indexes.append([i])
 
         random.shuffle(cand_indexes)
