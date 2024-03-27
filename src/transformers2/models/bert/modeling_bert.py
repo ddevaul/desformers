@@ -1509,7 +1509,7 @@ class BertForMaskedLM(BertPreTrainedModel):
         for i, string in enumerate(strings):
             text_ids = torch.empty([len(self.secondary_tokenizers), input_ids_tensor[0].shape[0]])
             for ii, stok in enumerate(self.secondary_tokenizers):
-                pad_id = stok.encode('[MASK]')[1]
+                pad_id = stok.encode('[PAD]')[1]
                 # print(input_ids_tensor[i].shape)
                 curr_ids_with_pads = torch.full(input_ids_tensor[i].shape, pad_id, dtype=torch.long) # the i shouldn't matter since it's already padded but just as an extra measure
                 new_ids = stok.tokenize(string)
@@ -1538,6 +1538,9 @@ class BertForMaskedLM(BertPreTrainedModel):
         #     row_word_tokens = self.tokenize_preserve_words(strings[i])
         #     wp_ids[i, :row_word_tokens.shape[0]] = row_word_tokens
         secondary_ids = torch.tensor(secondary_ids, dtype=torch.long)
+        print(secondary_ids.shape)
+        print(self.secondary_tokenizers[0].tokenizer.convert_ids_to_tokens(secondary_ids[0][0]))
+        print(input_ids_tensor)
         secondary_ids = secondary_ids.to(self.device)
         return secondary_ids
 
