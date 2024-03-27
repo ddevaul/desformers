@@ -1538,9 +1538,6 @@ class BertForMaskedLM(BertPreTrainedModel):
         #     row_word_tokens = self.tokenize_preserve_words(strings[i])
         #     wp_ids[i, :row_word_tokens.shape[0]] = row_word_tokens
         secondary_ids = torch.tensor(secondary_ids, dtype=torch.long)
-        print(secondary_ids.shape)
-        print(self.secondary_tokenizers[0].tokenizer.convert_ids_to_tokens(secondary_ids[0][0]))
-        print(input_ids_tensor)
         secondary_ids = secondary_ids.to(self.device)
         return secondary_ids
 
