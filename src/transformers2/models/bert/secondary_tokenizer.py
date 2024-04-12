@@ -61,4 +61,5 @@ class WordPieceToCharTokenizer(SecondaryTokenizer):
       
       cls_wp = word_tok.encode('[SEP]')[1]
       return_ids[0].append(cls_wp)
+      # print(self.tokenizer.convert_ids_to_tokens(return_ids[0]))
       return torch.tensor(return_ids[0])

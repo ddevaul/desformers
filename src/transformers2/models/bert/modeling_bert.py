@@ -1460,9 +1460,39 @@ class BertForMaskedLM(BertPreTrainedModel):
         return torch.tensor(return_ids[0])
 
     def _stringify(self, tokens):
-        special_tokens = ['[PAD]', '[CLS]', '[SEP]', '[UNK]', '[MASK]']
+        special_tokens = ['[PAD]', '[CLS]', '[SEP]']
+        mask_and_unk = ['[MASK]', '[UNK]']
+        mask_tok = '[MASK]'
+        unk_tok = '[UNK]'
         # Process tokens to form a properly spaced string
-        filtered_string = ""
+        filtered_string = ''
+        mask = False
+        # if mask then make the whole word a mask
+        for idx, token in enumerate(tokens):
+            if token == mask_tok:
+                mask = True
+            elif token.startswith("##"):
+                if mask:
+                    tokens[idx] = mask_tok
+            elif token in special_tokens:
+                continue
+            else:
+                mask = False
+
+        mask = False
+        for i in range(len(tokens)-1, 0, -1):
+            token = tokens[i]
+            if token == mask_tok:
+                mask = True
+            elif token.startswith("##"):
+                tokens[idx] = mask_tok
+            elif token in special_tokens:
+                continue
+            else:
+                if mask:
+                    tokens[i] = mask_tok
+                mask = False
+
         for token in tokens:
             if token.startswith("##"):
                 # Remove "##" and concatenate without a space
@@ -1513,7 +1543,6 @@ class BertForMaskedLM(BertPreTrainedModel):
                 # print(input_ids_tensor[i].shape)
                 curr_ids_with_pads = torch.full(input_ids_tensor[i].shape, pad_id, dtype=torch.long) # the i shouldn't matter since it's already padded but just as an extra measure
                 new_ids = stok.tokenize(string)
-                print(string)
                 # print(new_ids.shape)
                 curr_ids_with_pads[: new_ids.shape[0]] = new_ids
                 # print(text_ids.shape, "asdf")
@@ -1539,7 +1568,7 @@ class BertForMaskedLM(BertPreTrainedModel):
         #     row_word_tokens = self.tokenize_preserve_words(strings[i])
         #     wp_ids[i, :row_word_tokens.shape[0]] = row_word_tokens
         secondary_ids = torch.tensor(secondary_ids, dtype=torch.long)
-        print(self.secondary_tokenizers[0].tokenizer.convert_ids_to_tokens(secondary_ids[0][0]))
+        # print("aaaa", self.secondary_tokenizers[0].tokenizer.convert_ids_to_tokens(secondary_ids[0][0]))
         secondary_ids = secondary_ids.to(self.device)
         return secondary_ids
 
