@@ -1478,22 +1478,29 @@ class BertForMaskedLM(BertPreTrainedModel):
                 continue
             else:
                 mask = False
-
         mask = False
-        for i in range(len(tokens)-1, 0, -1):
-            token = tokens[i]
+        token_copy = tokens.copy()
+        for i in range(0, len(tokens)):
+            j = len(tokens) - 1 - i
+            token = tokens[j]
+            # print(token, "1")
             if token == mask_tok:
+                # print(token, "mask")
                 mask = True
+                # masks2 += 1
+                token_copy[j] = unk_tok
             elif token.startswith("##"):
-                tokens[idx] = mask_tok
+                # print(token, "##")
+                if mask:
+                    token_copy[j] = unk_tok
             elif token in special_tokens:
                 continue
             else:
                 if mask:
-                    tokens[i] = mask_tok
+                    token_copy[j] = unk_tok
                 mask = False
 
-        for token in tokens:
+        for token in token_copy:
             if token.startswith("##"):
                 # Remove "##" and concatenate without a space
                 filtered_string += token[2:]
